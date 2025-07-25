@@ -4,7 +4,7 @@ metadata:
   name: ami-assurance-app
   namespace: amine
 spec:
-  replicas: 1
+  replicas: 1 # Ensure only one pod
   selector:
     matchLabels:
       app: ami-assurance-app
@@ -30,7 +30,7 @@ spec:
         - name: SPRING_DATASOURCE_USERNAME
           value: "postgres"
         - name: SPRING_DATASOURCE_PASSWORD
-          value: "admin"
+          value: "admin" # Changed to admin
         - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
           value: "org.postgresql.Driver"
         - name: SPRING_JPA_HIBERNATE_DDL_AUTO

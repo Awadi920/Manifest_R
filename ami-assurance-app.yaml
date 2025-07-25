@@ -4,7 +4,7 @@ metadata:
   name: ami-assurance-app
   namespace: amine
 spec:
-  replicas: 1 # Ensure only one pod
+  replicas: 1
   selector:
     matchLabels:
       app: ami-assurance-app
@@ -15,20 +15,18 @@ spec:
     spec:
       initContainers:
       - name: wait-for-postgres
-        image: alpine
-        command: ['sh', '-c', 'until nslookup postgres-service.amine.svc.cluster.local; do echo waiting for postgres; sleep 2; done;']
+        image: busybox
+        command: ['sh', '-c', 'until nc -z postgres-service 5432; do echo waiting for postgres; sleep 2; done;']
       containers:
       - name: ami-assurance-app
         image: salimbouazizi/pfe_r_back:0.0.2
         ports:
         - containerPort: 8044
         env:
-        # Application name and server port
         - name: SPRING_APPLICATION_NAME
           value: "ami_assurance"
         - name: SERVER_PORT
           value: "8044"
-        # Database configuration
         - name: SPRING_DATASOURCE_URL
           value: "jdbc:postgresql://postgres-service:5432/AMIdb"
         - name: SPRING_DATASOURCE_USERNAME
@@ -41,19 +39,16 @@ spec:
           value: "update"
         - name: SPRING_JPA_SHOW_SQL
           value: "true"
-        # Disable open-in-view
         - name: SPRING_JPA_OPEN_IN_VIEW
           value: "false"
-        # HikariCP settings (increased timeouts)
         - name: SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
-          value: "120000" # 120 seconds
+          value: "120000"
         - name: SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT
-          value: "120000" # 120 seconds before failing on startup
+          value: "120000"
         - name: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
           value: "10"
         - name: SPRING_DATASOURCE_HIKARI_MAX_LIFETIME
-          value: "1800000" # 30 minutes
-        # Logging configuration
+          value: "1800000"
         - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_JDBC_CORE
           value: "DEBUG"
         - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_JDBC_CORE_JDBCTEMPLATE
@@ -65,8 +60,7 @@ spec:
         - name: LOGGING_LEVEL_ORG_POSTGRESQL
           value: "DEBUG"
         - name: LOGGING_LEVEL_JAVA_NET
-          value: "DEBUG" # Debug DNS resolution
-        # Email SMTP configuration
+          value: "DEBUG"
         - name: SPRING_MAIL_HOST
           value: "smtp.gmail.com"
         - name: SPRING_MAIL_PORT
@@ -85,14 +79,12 @@ spec:
           value: "true"
         - name: SPRING_MAIL_DEBUG
           value: "true"
-        # Twilio configuration (placeholders)
         - name: TWILIO_ACCOUNT_SID
           value: "...."
         - name: TWILIO_AUTH_TOKEN
           value: "...."
         - name: TWILIO_PHONE_NUMBER
           value: "...."
-        # Thymeleaf configuration
         - name: SPRING_THYMELEAF_CHECK_TEMPLATE_LOCATION
           value: "false"
         readinessProbe:

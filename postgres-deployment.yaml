@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres-deployment
-  namespace: amine
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -53,7 +53,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
-  namespace: amine
+  namespace: default
 spec:
   accessModes:
     - ReadWriteOnce
@@ -65,7 +65,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: postgres-pv
-  namespace: amine
+  namespace: default
 spec:
   capacity:
     storage: 10Gi
@@ -80,7 +80,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-service
-  namespace: amine
+  namespace: default
 spec:
   selector:
     app: postgres

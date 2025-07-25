@@ -13,6 +13,10 @@ spec:
       labels:
         app: ami-assurance-app
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: alpine
+        command: ['sh', '-c', 'until nslookup postgres-service.default.svc.cluster.local; do echo waiting for postgres; sleep 2; done;']
       containers:
       - name: ami-assurance-app
         image: salimbouazizi/pfe_r_back:0.0.2
@@ -37,10 +41,10 @@ spec:
           value: "update"
         - name: SPRING_JPA_SHOW_SQL
           value: "true"
-        # Disable open-in-view to prevent performance issues
+        # Disable open-in-view
         - name: SPRING_JPA_OPEN_IN_VIEW
           value: "false"
-        # HikariCP retry settings
+        # HikariCP settings
         - name: SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
           value: "30000" # 30 seconds
         - name: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
@@ -54,6 +58,10 @@ spec:
           value: "DEBUG"
         - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_JDBC_CORE_STATEMENTCREATORUTILS
           value: "TRACE"
+        - name: LOGGING_LEVEL_COM_ZAXXER_HIKARI
+          value: "DEBUG"
+        - name: LOGGING_LEVEL_ORG_POSTGRESQL
+          value: "DEBUG"
         # Email SMTP configuration
         - name: SPRING_MAIL_HOST
           value: "smtp.gmail.com"
@@ -80,7 +88,7 @@ spec:
           value: "...."
         - name: TWILIO_PHONE_NUMBER
           value: "...."
-        # Thymeleaf configuration (disable template checking)
+        # Thymeleaf configuration
         - name: SPRING_THYMELEAF_CHECK_TEMPLATE_LOCATION
           value: "false"
         readinessProbe:

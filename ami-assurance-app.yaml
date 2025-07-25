@@ -41,6 +41,9 @@ spec:
           value: "update"
         - name: SPRING_JPA_SHOW_SQL
           value: "true"
+        # Disable open-in-view to prevent performance issues
+        - name: SPRING_JPA_OPEN_IN_VIEW
+          value: "false"
         # Logging configuration
         - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_JDBC_CORE
           value: "DEBUG"
@@ -69,22 +72,24 @@ spec:
           value: "true"
         # Twilio configuration
         - name: TWILIO_ACCOUNT_SID
-          value: "..."
+          value: "...."
         - name: TWILIO_AUTH_TOKEN
-          value: "..."
+          value: "...."
         - name: TWILIO_PHONE_NUMBER
           value: "+15074316222"
+        # Thymeleaf configuration (disable template checking if not using Thymeleaf)
+        - name: SPRING_THYMELEAF_CHECK_TEMPLATE_LOCATION
+          value: "false"
         readinessProbe:
-          httpGet:
-            path: /actuator/health
+          tcpSocket:
             port: 8044
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30 # Allow time for application to start
           periodSeconds: 10
+          failureThreshold: 6 # Allow more attempts before marking as not ready
         livenessProbe:
-          httpGet:
-            path: /actuator/health
+          tcpSocket:
             port: 8044
-          initialDelaySeconds: 30
+          initialDelaySeconds: 60 # Allow more time for startup
           periodSeconds: 20
 ---
 apiVersion: v1

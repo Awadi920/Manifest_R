@@ -13,10 +13,6 @@ spec:
       labels:
         app: ami-assurance-app
     spec:
-      initContainers:
-      - name: wait-for-postgres
-        image: busybox
-        command: ['sh', '-c', 'until nslookup postgres-service.default.svc.cluster.local; do echo waiting for postgres; sleep 2; done;']
       containers:
       - name: ami-assurance-app
         image: salimbouazizi/pfe_r_back:0.0.2

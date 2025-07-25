@@ -27,18 +27,12 @@ spec:
           value: "admin"
         readinessProbe:
           exec:
-            command:
-            - pg_isready
-            - -U
-            - postgres
+            command: ["pg_isready", "-U", "postgres"]
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
           exec:
-            command:
-            - pg_isready
-            - -U
-            - postgres
+            command: ["pg_isready", "-U", "postgres"]
           initialDelaySeconds: 15
           periodSeconds: 20
         volumeMounts:
@@ -48,18 +42,6 @@ spec:
       - name: postgres-storage
         persistentVolumeClaim:
           claimName: postgres-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-pvc
-  namespace: amine
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -75,6 +57,18 @@ spec:
   hostPath:
     path: /home/azureuser/postgres-data
     type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: amine
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
 ---
 apiVersion: v1
 kind: Service

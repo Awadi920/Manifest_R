@@ -13,10 +13,6 @@ spec:
       labels:
         app: ami-assurance-app
     spec:
-      initContainers:
-      - name: wait-for-postgres
-        image: alpine
-        command: ['sh', '-c', 'until nslookup postgres-service.default.svc.cluster.local; do echo waiting for postgres; sleep 2; done;']
       containers:
       - name: ami-assurance-app
         image: salimbouazizi/pfe_r_back:0.0.2
@@ -46,7 +42,9 @@ spec:
           value: "false"
         # HikariCP settings
         - name: SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
-          value: "30000" # 30 seconds
+          value: "60000" # 60 seconds
+        - name: SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT
+          value: "60000" # 60 seconds before failing on startup
         - name: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
           value: "10"
         - name: SPRING_DATASOURCE_HIKARI_MAX_LIFETIME
@@ -62,6 +60,8 @@ spec:
           value: "DEBUG"
         - name: LOGGING_LEVEL_ORG_POSTGRESQL
           value: "DEBUG"
+        - name: LOGGING_LEVEL_JAVA_NET
+          value: "DEBUG" # Debug DNS resolution
         # Email SMTP configuration
         - name: SPRING_MAIL_HOST
           value: "smtp.gmail.com"
